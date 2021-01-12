@@ -1,16 +1,16 @@
 FROM debian
 MAINTAINER applecoode
 #install bash-completion
-RUN apt update && apt install -y bash-completion && \
+RUN apt update && apt install -y bash-completion curl && \
         sed -i '/# enable bash completion/,/^$/ {/enable bash/!s/^#//}' /etc/bash.bashrc
 #source /etc/bash.bashrc
 #download & compile vim 8.2
 WORKDIR /tmp
+RUN curl -sL install-node.now.sh/lts | bash -s -- --yes
 RUN apt install -y \
         ncurses-dev build-essential mercurial && \
     apt install -y \
-        python3-dev shellcheck golang-any cmake git curl && \
-    curl -sL install-node.now.sh/lts | bash && \
+        python3-dev shellcheck golang-any cmake git && \
     git clone https://github.com/vim/vim.git
 #install node    
 WORKDIR /tmp/vim/src 
@@ -38,7 +38,9 @@ RUN git clone -b coctest https://github.com/applecoode/vimrc.git \
         && mv vimrc .vim
 RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-RUN vim "+PlugInstall" "+CocInstall coc-pyright coc-tsserver" "+qa!"    
+RUN vim "+PlugInstall" "+qa!"
+RUN echo blabla | vim || true
+RUN vim "+CocInstall coc-pyright coc-tsserver" "+qa!"    
 RUN rm -rf /tmp/vim && \
     apt purge -y ncurses-dev build-essential mercurial \
         golang-1.11-go cmake
